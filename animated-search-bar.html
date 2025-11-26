@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Search Bar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #1a1a2e;
+            --fg: #e0e0e0;
+            --input: #2a2a4a;
+            --primary: #8b5cf6;
+        }
+
+        body {
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 50px;
+        }
+
+        /* 검색창 - 초기에는 숨김 */
+        .search-input {
+            width: 0;
+            height: 50px;
+            background: var(--input);
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            padding: 0;
+            font-size: 16px;
+            color: var(--fg);
+            outline: none;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            caret-color: transparent;
+        }
+
+        .search-input.active {
+            width: 300px;
+            padding: 0 50px 0 50px;
+            opacity: 1;
+        }
+
+        .search-input::placeholder {
+            color: #888;
+        }
+
+        /* 커서 깜빡임 애니메이션 */
+        @keyframes showCaret {
+            from {
+                caret-color: transparent;
+            }
+            to {
+                caret-color: var(--primary);
+            }
+        }
+
+        .search-input.active:focus {
+            animation: showCaret 0.5s forwards;
+        }
+
+        /* 돋보기 버튼 - 배경 없음 */
+        .search-btn {
+            position: absolute;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--fg);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .search-btn.active .search-icon {
+            color: var(--primary);
+            transform: rotate(360deg);
+        }
+
+        /* 전송 버튼 */
+        .submit-btn {
+            position: absolute;
+            right: 5px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition-delay: 0s;
+        }
+
+        .submit-btn.active {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #9d6eff;
+            transform: scale(1.1);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.95);
+        }
+
+        .submit-icon {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        /* 검색 완료 피드백 */
+        @keyframes searchPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
+        }
+
+        .submit-btn.searching {
+            animation: searchPulse 0.6s ease-out;
+        }
+
+        /* 다크모드 미디어 쿼리 */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f0f0f5;
+                --fg: #1a1a2e;
+                --input: #ffffff;
+                --primary: #8b5cf6;
+            }
+
+            .search-input.active {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="search-box">
+            <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Search..."
+                id="searchInput"
+            >
+            <button class="search-btn" id="searchBtn">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+            <button class="submit-btn" id="submitBtn">
+                <svg class="submit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        let isActive = false;
+
+        // 검색 실행 함수
+        function executeSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                // 검색 버튼 애니메이션
+                submitBtn.classList.add('searching');
+                setTimeout(() => {
+                    submitBtn.classList.remove('searching');
+                }, 600);
+                
+                // 여기에 실제 검색 로직 추가
+                console.log('검색어:', query);
+                alert('검색어: ' + query);
+            }
+        }
+
+        // 돋보기 버튼 클릭 시 토글
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (!isActive) {
+                // 검색창 열기
+                isActive = true;
+                searchInput.classList.add('active');
+                searchBtn.classList.add('active');
+                submitBtn.classList.add('active');
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 400);
+            }
+        });
+
+        // 전송 버튼 클릭 시 검색 실행
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            executeSearch();
+        });
+
+        // 엔터 키로 검색 실행
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                executeSearch();
+            }
+            // ESC 키로 닫기
+            if (e.key === 'Escape' && searchInput.value === '') {
+                isActive = false;
+                searchInput.classList.remove('active');
+                searchBtn.classList.remove('active');
+                submitBtn.classList.remove('active');
+                searchInput.blur();
+            }
+        });
+
+        // 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (!searchBtn.contains(e.target) && !searchInput.contains(e.target) && !submitBtn.contains(e.target)) {
+                if (isActive && searchInput.value === '') {
+                    isActive = false;
+                    searchInput.classList.remove('active');
+                    searchBtn.classList.remove('active');
+                    submitBtn.classList.remove('active');
+                    searchInput.blur();
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
