@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Hero</title>
+
+    <style>
+      body {
+        margin: 0;
+        background: #e9edf2;
+      }
+
+      .hero {
+        position: relative;
+        width: 100%;
+        max-width: 1920px;
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      .hero-bg {
+        width: 100%;
+        display: block;
+      }
+
+      /* 공통 구름 스타일 */
+      .cloud {
+        position: absolute;
+        pointer-events: none;
+        will-change: transform;
+      }
+
+      /* 좌측 구름 */
+      .cloud1 {
+        top: 6%;
+        left: 18%;
+        width: 140px;
+        animation: float1 10s ease-in-out infinite alternate;
+      }
+
+      /* 중앙 구름 */
+      .cloud2 {
+        top: 3%;
+        left: 38%;
+        width: 190px;
+        animation: float2 12s ease-in-out infinite alternate;
+      }
+
+      /* 우측 구름 */
+      .cloud3 {
+        top: 8%;
+        right: 14%;
+        width: 150px;
+        animation: float3 11s ease-in-out infinite alternate;
+      }
+
+      /* 크게 둥실거리는 애니메이션 */
+
+      @keyframes float1 {
+        0% {
+          transform: translate(0px, 0px) rotate(0deg) scale(1);
+        }
+        50% {
+          transform: translate(35px, -40px) rotate(3deg) scale(1.05);
+        }
+        100% {
+          transform: translate(-25px, 20px) rotate(-2deg) scale(0.98);
+        }
+      }
+
+      @keyframes float2 {
+        0% {
+          transform: translate(0px, 0px) rotate(0deg) scale(1);
+        }
+        50% {
+          transform: translate(-45px, -30px) rotate(-4deg) scale(1.06);
+        }
+        100% {
+          transform: translate(30px, 25px) rotate(3deg) scale(0.97);
+        }
+      }
+
+      @keyframes float3 {
+        0% {
+          transform: translate(0px, 0px) rotate(0deg) scale(1);
+        }
+        50% {
+          transform: translate(40px, -35px) rotate(2deg) scale(1.05);
+        }
+        100% {
+          transform: translate(-30px, 30px) rotate(-3deg) scale(0.99);
+        }
+      }
+
+      /* 반응형 */
+      @media (max-width: 768px) {
+        .cloud1 {
+          width: 80px;
+        }
+        .cloud2 {
+          width: 110px;
+        }
+        .cloud3 {
+          width: 90px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="hero">
+      <img src="main.png" class="hero-bg" alt="main hero background" />
+
+      <img src="cloud_1.png" class="cloud cloud1" />
+      <img src="cloud_2.png" class="cloud cloud2" />
+      <img src="cloud_3.png" class="cloud cloud3" />
+    </div>
+  </body>
+</html>
